@@ -4,9 +4,7 @@ type PrismaPromise<T> = Prisma.PrismaPromise<T>;
 
 type TuplePromise<A extends any[], R> = (
 	...args: A
-) => R extends null
-	? PrismaPromise<[null, Error]>
-	: PrismaPromise<[R, undefined]>;
+) => PrismaPromise<[null, Error] | [R, undefined]>;
 
 export type ProxyPrisma<PC extends {}> = {
 	[key in keyof PC]: PC[key] extends (

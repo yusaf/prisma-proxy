@@ -1,0 +1,16 @@
+{
+    "$schema": "https://json.schemastore.org/tsconfig",
+    "display": "Node 18",
+  
+    "compilerOptions": {
+      "lib": ["esnext"],
+      "module": "esnext",
+      "target": "esnext",
+      "strict": true,
+      "outDir": "lib",
+      "declaration": true,
+      "moduleResolution": "node",
+      "resolveJsonModule": true
+    },
+    "include": ["src/**/*"]
+  }
