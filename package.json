@@ -1,8 +1,8 @@
 {
   "name": "prisma-proxy",
-  "version": "0.7.0",
+  "version": "0.8.0",
   "description": "Proxy Prisma client that returns a [response, error] tuple  ",
-  "type":"module",
+  "type": "module",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "scripts": {
@@ -11,7 +11,6 @@
   "author": "Yusaf Khaliq",
   "license": "ISC",
   "devDependencies": {
-    "@prisma/client": "^5.0.0",
     "typescript": "^5.1.6"
   }
 }

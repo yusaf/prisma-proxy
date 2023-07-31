@@ -1,17 +1,5 @@
-import type { Prisma } from "@prisma/client";
-
-type PrismaPromise<T> = Prisma.PrismaPromise<T>;
-
-type TuplePromise<A extends any[], R> = (
-	...args: A
-) => PrismaPromise<[null, Error] | [R, undefined]>;
-
-export type ProxyPrisma<PC extends {}> = {
-	[key in keyof PC]: PC[key] extends (
-		...args: infer A
-	) => PrismaPromise<infer R>
-		? TuplePromise<A, R>
-		: ProxyPrisma<PC[key]>;
+export type ProxyPrisma<PC extends {}> = PC & {
+	lastError: null | Error;
 };
 
 export function proxyPrisma<PC extends {}>(prismaClient: PC): ProxyPrisma<PC> {
@@ -32,14 +20,14 @@ function prismaProxyClient(callback: any, path: string[]): any {
 			for (let i = 0, iLen = path.length; i < iLen; i++) {
 				method = method[path[i] as keyof typeof method];
 			}
-			let result = null,
-				error;
+			let result = null;
 			try {
 				result = await method(...args);
-			} catch (e: any) {
-				error = e;
+				callback.lastError = null;
+			} catch (error: any) {
+				callback.lastError = error;
 			}
-			return [result, error];
+			return result;
 		},
 	});
 }
