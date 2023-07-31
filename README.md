@@ -1,4 +1,18 @@
-# Usage
+# About
+Got frustrated with all the try catch, try catch, try catch, well you get the idea.
+
+### Limitations
+- Although limitations, they are only limitations for the proxy implementation. \
+  - prisma proxy respect the original prisma client and makes no direct modifications to it. 
+  - So you can still use the prisma client as is alongside the proxy!
+- Only works for callable methods e.g. `prisma.table.create()`, `prisma.table.findMany()` (but not `prisma.table.fields`)
+- Additional `.lastError` property, so if you happen to have a table/collection with this name, it will not longer work on the proxy client.
+- Not soo much a limitation as it's kinda the point of this package, but errors are no longer thrown (so don't try catching em, or you'll be catching thin air).
+  - After you call a method e.g. `prisma.users.findMany()` you can check `prisma.lastError` to see if there was an error
+  - If there was no error `prisma.lastError` will be `null`
+  - when you make another call `prisma.lastError` will be immediately overwritten, so you must always check for errors immediately after the original call
+
+
 
 ## Normal Usage (without proxy)
 ```typescript
@@ -22,19 +36,17 @@ if(postsError){
 
 ## Proxy Usage
 
-### **_NOTE:_**  
-- Errors will no longer be thrown as they are caught in the proxy and attached to `prisma.lastError`
-- `prisma.lastError` changes after every prisma function call, if the last call was successful it will be `null` otherwise it will be an error
-
 ```typescript
 import { PrismaClient } from '@prisma/client';
 import { proxyPrisma, type ProxyPrisma } from 'prisma-proxy';
 
-// The type in case you need it.
+// The type in case you need it
 type ProxyPrismaClient = ProxyPrisma<PrismaClient>;
 
-const prisma: ProxyPrismaClient = proxyPrisma(new PrismaClient());
-// Use prisma as you do normal
+const prismaOG: PrismaClient = new PrismaClient();
+const prisma: ProxyPrismaClient = proxyPrisma(prismaOG);
+
+// Use prisma proxy as you would regularly for callable methods
 const posts = await prisma.posts.findMany();
 
 if(prisma.lastError){

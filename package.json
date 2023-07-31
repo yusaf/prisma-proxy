@@ -1,6 +1,6 @@
 {
   "name": "prisma-proxy",
-  "version": "0.8.0",
+  "version": "0.8.2",
   "description": "Proxy Prisma client that returns a [response, error] tuple  ",
   "type": "module",
   "main": "lib/index.js",

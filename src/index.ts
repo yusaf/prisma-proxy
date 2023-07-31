@@ -6,26 +6,29 @@ export function proxyPrisma<PC extends {}>(prismaClient: PC): ProxyPrisma<PC> {
 	return prismaProxyClient(prismaClient, []);
 }
 
-function noop() {}
-function prismaProxyClient(callback: any, path: string[]): any {
+const noop: any = function () {};
+function prismaProxyClient(prismaClient: any, path: string[]): any {
 	return new Proxy(noop, {
 		get(_obj, key) {
 			if (typeof key !== "string") {
 				return undefined;
 			}
-			return prismaProxyClient(callback, [...path, key]);
+			if (!path.length && key === "lastError") {
+				return noop.lastError;
+			}
+			return prismaProxyClient(prismaClient, [...path, key]);
 		},
 		async apply(_1, _2, args) {
-			let method = callback;
+			let method = prismaClient;
 			for (let i = 0, iLen = path.length; i < iLen; i++) {
-				method = method[path[i] as keyof typeof method];
+				method = method[path[i]];
 			}
 			let result = null;
 			try {
 				result = await method(...args);
-				callback.lastError = null;
-			} catch (error: any) {
-				callback.lastError = error;
+				noop.lastError = null;
+			} catch (error) {
+				noop.lastError = error;
 			}
 			return result;
 		},
